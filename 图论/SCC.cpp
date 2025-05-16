@@ -9,7 +9,7 @@ struct SCC {
         e.assign(n_, {});
         dfn.assign(n_, -1);
         low.resize(n_);
-        bel.assign(n_, -1);
+        bel.assign(n_, -1); 
         stk.clear();
         cur = cnt = 0;
     }
