@@ -1,51 +1,55 @@
 struct SCC {
     int n;
-    std::vector<std::vector<int>> e;
-    std::vector<int> stk, dfn, low, bel; // bel[i] 表示 i 所在的 SCC
-    int cur, cnt; // cur 表示当前时间戳, cnt 表示 SCC 编号
-
-    SCC (int n_) {
-        n = n_ - 1;
-        e.assign(n_, {});
-        dfn.assign(n_, -1);
-        low.resize(n_);
-        bel.assign(n_, -1); 
+    std::vector<std::vector<int>> adj;
+    std::vector<int> stk;
+    std::vector<int> dfn, low, bel;     // bel[i] 表示 i 所在的 SCC
+    int cur, cnt;   // cur 表示当前时间戳, cnt 表示 SCC 编号
+    
+    SCC() {}
+    SCC(int n) {
+        init(n);
+    }
+    
+    void init(int n) {
+        this->n = n;
+        adj.assign(n, {});
+        dfn.assign(n, -1);
+        low.resize(n);
+        bel.assign(n, -1);
         stk.clear();
         cur = cnt = 0;
     }
-
+    
     void addEdge(int u, int v) {
-        e[u].push_back(v);
+        adj[u].push_back(v);
     }
-
-    void dfs(int u) {
-        dfn[u] = low[u] = ++cur;
-        stk.push_back(u);
-
-        for (auto y : e[u]) {
+    
+    void dfs(int x) {
+        dfn[x] = low[x] = cur++;
+        stk.push_back(x);
+        
+        for (auto y : adj[x]) {
             if (dfn[y] == -1) {
                 dfs(y);
-                low[u] = std::min(low[u], low[y]);
+                low[x] = std::min(low[x], low[y]);
             } else if (bel[y] == -1) {
-                low[u] = std::min(low[u], dfn[y]);
+                low[x] = std::min(low[x], dfn[y]);
             }
         }
-
-        if (dfn[u] == low[u]) {
-            cnt++;
-            while (1) {
-                int k = stk.back();
+        
+        if (dfn[x] == low[x]) {
+            int y;
+            do {
+                y = stk.back();
+                bel[y] = cnt;
                 stk.pop_back();
-                bel[k] = cnt;
-                if (k == u) {
-                    break;
-                }
-            }
+            } while (y != x);
+            cnt++;
         }
     }
-
+    
     std::vector<int> work() {
-        for (int i = 1; i <= n; i++) {
+        for (int i = 0; i < n; i++) {
             if (dfn[i] == -1) {
                 dfs(i);
             }

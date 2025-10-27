@@ -1,46 +1,44 @@
-template<typename T>
+// 左闭右开
+template <typename T>
 struct Fenwick {
     int n;
-    std::vector<T> c;
-
-    Fenwick(int n_) {
+    std::vector<T> a;
+    
+    Fenwick(int n_ = 0) {
+        init(n_);
+    }
+    
+    void init(int n_) {
         n = n_;
-        c.assign(n_, {});
+        a.assign(n, T{});
     }
-
-    int lowbit(int x) {
-        return x & (-x);
-    }
-
-    void add(int x, const T& v) {
-        for (int i = x; i < n; i += lowbit(i)) {
-            c[i] = c[i] + v;
+    
+    void add(int x, const T &v) {
+        for (int i = x + 1; i <= n; i += i & -i) {
+            a[i - 1] = a[i - 1] + v;
         }
     }
-
+    
     T sum(int x) {
-        T res {};
-        for (int i = x; i >= 1; i -= lowbit(i)) {
-            res = res + c[i];
+        T ans{};
+        for (int i = x; i > 0; i -= i & -i) {
+            ans = ans + a[i - 1];
         }
-        return res;
+        return ans;
     }
-
+    
     T rangeSum(int l, int r) {
-        if (l > r) {
-            return {};
-        }
-        return sum(r) - sum(l - 1);
+        return sum(r) - sum(l);
     }
-
-    // 第一个 sum(x) >= k
-    int find(const T& k) {
+    
+    // 最大 x 使得 sum(x) <= k（注意左闭右开）
+    int select(const T &k) {
         int x = 0;
         T cur{};
-        for (int i = 1 << std::__lg(n); i > 0; i /= 2) {
-            if (x + i <= n && cur + c[x + i] <= k) {
+        for (int i = 1 << std::__lg(n); i; i /= 2) {
+            if (x + i <= n && cur + a[x + i - 1] <= k) {
                 x += i;
-                cur = cur + c[x];
+                cur = cur + a[x - 1];
             }
         }
         return x;

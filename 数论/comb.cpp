@@ -1,7 +1,5 @@
 const int N = 5e5 + 10;
 const int mod = 1e9 + 7;
-int vis[N], a[N];
-i64 cnt[N];
 std::vector<i64> fac(N + 1, 1), invfac(N + 1, 1);
 i64 fpow(i64 a, i64 b) {
     i64 res = 1;
